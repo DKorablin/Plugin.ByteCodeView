@@ -35,8 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ByteCodeReader, Version=1.0.33.0, Culture=neutral, PublicKeyToken=a8ac5fc45c3adb8d, processorArchitecture=MSIL">
-      <HintPath>..\packages\AlphaOmega.ByteCodeReader.1.0.33\lib\net20\ByteCodeReader.dll</HintPath>
+    <Reference Include="ByteCodeReader, Version=1.0.8415.27098, Culture=neutral, PublicKeyToken=a8ac5fc45c3adb8d">
+      <HintPath>..\packages\AlphaOmega.ByteCodeReader.1.0.8415.27098\lib\net20\ByteCodeReader.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SAL.Flatbed, Version=1.2.9.2, Culture=neutral, PublicKeyToken=a8ac5fc45c3adb8d, processorArchitecture=MSIL">
       <HintPath>..\packages\SAL.Flatbed.1.2.9.2\lib\net20\SAL.Flatbed.dll</HintPath>
@@ -80,9 +81,9 @@
     <Compile Include="ClassItemType.cs" />
     <Compile Include="Bll\FileStorage.cs" />
     <Compile Include="Bll\NodeExtender.cs" />
-    <Compile Include="Bll\PeListChangedEventArgs.cs"/>
-    <Compile Include="Bll\PeListChangeType.cs"/>
-    <Compile Include="Bll\TypeExtender.cs"/>
+    <Compile Include="Bll\PeListChangedEventArgs.cs" />
+    <Compile Include="Bll\PeListChangeType.cs" />
+    <Compile Include="Bll\TypeExtender.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="Controls\ReflectionArrayListView.cs">
       <SubType>Component</SubType>
