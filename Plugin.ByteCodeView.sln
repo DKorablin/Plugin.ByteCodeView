@@ -6,14 +6,18 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{344230F9-381D-4AAE-A925-4169265946D5}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		.github\dependabot.yml = .github\dependabot.yml
 		Plugin.ByteCodeView.dll.nuspec = Plugin.ByteCodeView.dll.nuspec
 		README.md = README.md
-		.github\workflows\release.yml = .github\workflows\release.yml
-		.github\workflows\test.yml = .github\workflows\test.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.ByteCodeView35", "Plugin.ByteCodeView\Plugin.ByteCodeView35.csproj", "{CE7C26CE-E62F-4FC6-818A-AF8A82D15F9F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{8540EBE6-1D4E-4058-A84B-CA942CB1C920}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
+		.github\workflows\test.yml = .github\workflows\test.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +32,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8540EBE6-1D4E-4058-A84B-CA942CB1C920} = {344230F9-381D-4AAE-A925-4169265946D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA0CBBC-4738-4628-9F6B-348389EE53AC}
