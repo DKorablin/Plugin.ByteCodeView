@@ -167,6 +167,7 @@ namespace Plugin.ByteCodeView.Controls
 			//throw new ArgumentException(String.Format("Coumn {0} not found", name));
 			return base.Columns.Add(name);
 		}
+
 		[Obsolete("The method creates a fierce scribe with columns when binding different arrays", true)]
 		private void SetColumns(String[] columns)
 		{

@@ -121,7 +121,7 @@ namespace Plugin.ByteCodeView.Controls
 			base.Items.AddRange(items.ToArray());
 		}
 
-		internal ListViewItem CreateReflectedListItem(Object row, MemberInfo info, String groupName, Func<Object> deleg)
+		internal ListViewItem CreateReflectedListItem(Object row, MemberInfo info, String groupName, Func<Object> callback)
 		{
 			if(groupName == null)
 				groupName = info.MemberType.ToString();
@@ -130,7 +130,7 @@ namespace Plugin.ByteCodeView.Controls
 			Boolean isException = false;
 			try
 			{
-				value = this.Plugin.FormatValue(info, deleg());
+				value = this.Plugin.FormatValue(info, callback());
 			} catch(TargetInvocationException exc)
 			{
 				isException = true;
@@ -165,7 +165,7 @@ namespace Plugin.ByteCodeView.Controls
 				new ColumnHeader(){ Text = "Value", },
 			});
 
-			String[] subItems = Array.ConvertAll<String, String>(new String[base.Columns.Count], delegate(String a) { return String.Empty; });
+			String[] subItems = Array.ConvertAll<String, String>(new String[base.Columns.Count], a => String.Empty);
 			result.SubItems.AddRange(subItems);
 
 			result.SubItems[ReflectionListView.ColumnNameIndex].Text = name;

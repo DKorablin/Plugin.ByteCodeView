@@ -9,12 +9,14 @@ using SAL.Windows;
 
 namespace Plugin.ByteCodeView.Directory
 {
+	/// <summary>Base class for displaying the user interface</summary>
 	public abstract partial class DocumentBase : UserControl, IPluginSettings<DocumentBaseSettings>
 	{
 		private readonly ClassItemType _peType;
 		private DocumentBaseSettings _settings;
 
 		protected PluginWindows Plugin => (PluginWindows)this.Window.Plugin;
+
 		protected IWindow Window => (IWindow)base.Parent;
 
 		/// <summary>Path to the open file in the current document</summary>
