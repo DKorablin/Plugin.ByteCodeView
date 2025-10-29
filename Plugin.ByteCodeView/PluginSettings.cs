@@ -6,7 +6,6 @@ namespace Plugin.ByteCodeView
 {
 	public class PluginSettings : INotifyPropertyChanged
 	{
-		private readonly PluginWindows _plugin;
 		private Boolean? _monitorFileChange;
 		private Boolean? _showAsHexValue;
 		private Boolean? _showBaseMetaTables;
@@ -27,7 +26,7 @@ namespace Plugin.ByteCodeView
 			}
 		}
 
-		[Category("Apperance")]
+		[Category("Appearance")]
 		[Description("Show basic structure data")]
 		[DefaultValue(false)]
 		public Boolean ShowBaseMetaTables
@@ -81,11 +80,6 @@ namespace Plugin.ByteCodeView
 					? new String[] { }
 					: this.LoadedFilesI.Split(new Char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
 			set => this.LoadedFilesI = value == null ? null : String.Join("|", value);
-		}
-
-		internal PluginSettings(PluginWindows plugin)
-		{
-			this._plugin = plugin;
 		}
 
 		#region INotifyPropertyChanged

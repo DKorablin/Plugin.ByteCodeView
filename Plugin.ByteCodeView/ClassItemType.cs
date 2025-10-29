@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Plugin.ByteCodeView
+﻿namespace Plugin.ByteCodeView
 {
 	public enum ClassItemType
 	{
@@ -13,7 +11,7 @@ namespace Plugin.ByteCodeView
 		Method,
 		Attributes,
 		AttributesPool,
-		Intrefaces,
+		Interfaces,
 		Interface,
 	}
 }

@@ -16,7 +16,6 @@ namespace Plugin.ByteCodeView
 	{
 		private const String Caption = "JVM Class View";
 		private readonly SystemImageList _smallImageList;
-		#region Properties
 
 		private PluginWindows Plugin => (PluginWindows)this.Window.Plugin;
 
@@ -34,11 +33,10 @@ namespace Plugin.ByteCodeView
 				return (String)node.Tag;
 			}
 		}
-		#endregion Properties
 
 		public PanelTOC()
 		{
-			InitializeComponent();
+			this.InitializeComponent();
 			gridSearch.TreeView = tvToc;
 			this._smallImageList = new SystemImageList(SystemImageListSize.SmallIcons);
 			SystemImageListHelper.SetImageList(tvToc, this._smallImageList, false);
@@ -46,7 +44,7 @@ namespace Plugin.ByteCodeView
 
 		protected override void OnCreateControl()
 		{
-			this.Window.Closing += new EventHandler<CancelEventArgs>(Window_Closing);
+			this.Window.Closing += new EventHandler<CancelEventArgs>(this.Window_Closing);
 			lvInfo.Plugin = this.Plugin;
 
 			String[] loadedFiles = this.Plugin.Settings.LoadedFiles;
@@ -54,28 +52,28 @@ namespace Plugin.ByteCodeView
 				this.FillToc(file);
 			this.ChangeTitle();
 
-			this.Plugin.Binaries.PeListChanged += new EventHandler<PeListChangedEventArgs>(Plugin_PeListChanged);
+			this.Plugin.Binaries.PeListChanged += new EventHandler<PeListChangedEventArgs>(this.Plugin_PeListChanged);
 			this.Plugin.SettingsChanged += Plugin_SettingsChanged;
 			base.OnCreateControl();
 		}
 
 		private void Window_Closing(Object sender, CancelEventArgs e)
 		{
-			this.Plugin.Binaries.PeListChanged -= new EventHandler<PeListChangedEventArgs>(Plugin_PeListChanged);
-			this.Plugin.SettingsChanged -= Plugin_SettingsChanged;
+			this.Plugin.Binaries.PeListChanged -= new EventHandler<PeListChangedEventArgs>(this.Plugin_PeListChanged);
+			this.Plugin.SettingsChanged -= this.Plugin_SettingsChanged;
 		}
 
-		/// <summary>Изменить заголовок окна</summary>
+		/// <summary>Change the window title</summary>
 		private void ChangeTitle()
 		{
 			this.Window.Caption = tvToc.Nodes.Count > 0
-				? String.Format("{0} ({1})", PanelTOC.Caption, tvToc.Nodes.Count)
-				: this.Window.Caption = PanelTOC.Caption;
+				? $"{PanelTOC.Caption} ({tvToc.Nodes.Count})"
+				: PanelTOC.Caption;
 		}
 
-		/// <summary>Поиск узла в дереве по пути к файлу</summary>
-		/// <param name="filePath">Путь к файлу</param>
-		/// <returns>Найденный узел в дереве или null</returns>
+		/// <summary>Find a node in the tree by file path</summary>
+		/// <param name="filePath">File path</param>
+		/// <returns>The found node in the tree or null</returns>
 		private TreeNode FindNode(String filePath)
 		{
 			foreach(TreeNode node in tvToc.Nodes)
@@ -155,13 +153,13 @@ namespace Plugin.ByteCodeView
 				if(this.Plugin.GetSectionData(type, nodeName, filePath) is ISectionData)
 					this.OpenBinaryDocument(type, nodeName, filePath);
 				else
-					this.Plugin.Trace.TraceInformation("Viwer {0} not implemented", type);
+					this.Plugin.Trace.TraceInformation("Viewer {0} not implemented", type);
 			}
 		}
 
 		private TreeNode FillToc(String filePath)
 		{
-			//Проверка на уже добавленные файлы в дерево
+			//Checking for files already added to the tree
 			TreeNode n = this.FindNode(filePath);
 			if(n != null)
 			{
@@ -194,19 +192,19 @@ namespace Plugin.ByteCodeView
 
 			splitToc.Panel2Collapsed = false;
 			String filePath = this.SelectedPE;
-			if(e.Node.Parent == null)//Описание файла
+			if(e.Node.Parent == null)//File description
 				lvInfo.DataBind(new FileInfo(filePath));
 
 			try
 			{
 				base.Cursor = Cursors.WaitCursor;
 				ClassItemType? type = this.SelectedHeader;
-				if(type.HasValue)//Директория PE файла
+				if(type.HasValue)//PE file directory
 				{
 					Object target = this.Plugin.GetSectionData(type.Value, e.Node.Text, filePath);
 					lvInfo.DataBind(target);
 				} else if(e.Node.Tag != null && e.Node.Parent != null)
-					lvInfo.DataBind(e.Node.Tag);//Generic объект
+					lvInfo.DataBind(e.Node.Tag);//Generic object
 			} finally
 			{
 				base.Cursor = Cursors.Default;
@@ -360,7 +358,7 @@ namespace Plugin.ByteCodeView
 
 				nodes.Add(PanelTOC.CreateDirectoryNode(null, false, ClassItemType.ClassFile));
 				nodes.Add(PanelTOC.CreateDirectoryNode(null, info.ConstantPoolCount == 0, ClassItemType.ConstantPool));
-				nodes.Add(PanelTOC.CreateDirectoryNode(null, info.InterfacesCount == 0, ClassItemType.Intrefaces));
+				nodes.Add(PanelTOC.CreateDirectoryNode(null, info.InterfacesCount == 0, ClassItemType.Interfaces));
 
 				TreeNode fieldsNode = PanelTOC.CreateDirectoryNode(null, info.Fields.Length == 0, ClassItemType.Fields);
 				foreach(Field_Info field in info.Fields)

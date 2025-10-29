@@ -8,7 +8,7 @@ namespace Plugin.ByteCodeView.Directory
 {
 	public partial class DocumentBinary : DocumentBase
 	{
-		internal static DisplayMode[] DisplayModes = (DisplayMode[])Enum.GetValues(typeof(DisplayMode));
+		internal static readonly DisplayMode[] DisplayModes = (DisplayMode[])Enum.GetValues(typeof(DisplayMode));
 		private DocumentBinarySettings _settings;
 
 		public override DocumentBaseSettings Settings => this.SettingsI;
@@ -18,8 +18,8 @@ namespace Plugin.ByteCodeView.Directory
 		public DocumentBinary()
 			: base(ClassItemType.ConstantPool)
 		{
-			InitializeComponent();
-			tsddlView.Items.AddRange(Array.ConvertAll(DocumentBinary.DisplayModes, delegate(DisplayMode mode) { return mode.ToString(); }));
+			this.InitializeComponent();
+			tsddlView.Items.AddRange(Array.ConvertAll(DocumentBinary.DisplayModes, mode => mode.ToString()));
 			tsddlView.SelectedIndex = 0;
 		}
 
@@ -46,7 +46,6 @@ namespace Plugin.ByteCodeView.Directory
 			}
 
 			base.Window.Caption = String.Join(" - ", captions);
-			//base.SetCaption();
 		}
 
 		private ISectionData GetSectionData()

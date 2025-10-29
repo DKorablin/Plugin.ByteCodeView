@@ -20,13 +20,13 @@ namespace Plugin.ByteCodeView.Directory
 		public DocumentTables()
 			: base(ClassItemType.Tables)
 		{
-			InitializeComponent();
+			this.InitializeComponent();
 			gridSearch.ListView = lvHeaps;
 			
 			this._menuItemGoTo = new ToolStripMenuItem("GoTo");
-			this._menuItemGoTo.DropDownItemClicked += new ToolStripItemClickedEventHandler(_menuItemGoTo_DropDownItemClicked);
+			this._menuItemGoTo.DropDownItemClicked += new ToolStripItemClickedEventHandler(this._menuItemGoTo_DropDownItemClicked);
 			lvHeaps.ContextMenuStrip.Items.Insert(0, this._menuItemGoTo);
-			lvHeaps.ContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(ContextMenuStrip_Opening);
+			lvHeaps.ContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip_Opening);
 
 			this._constantNode = new TreeNode(Constant.GetHeaderName(ClassItemType.ConstantPool)) { Tag = ClassItemType.ConstantPool, };
 			this._attributesNode = new TreeNode(Constant.GetHeaderName(ClassItemType.AttributesPool)) { Tag = ClassItemType.AttributesPool, };
@@ -39,9 +39,9 @@ namespace Plugin.ByteCodeView.Directory
 			Boolean isDirty = this._constantNode.Nodes.Count > 0 || this._attributesNode.Nodes.Count > 0;
 
 			foreach(ITable table in info.ConstantPool)
-				this.GetAddTreeNode(this._constantNode, table);
+				this.AddTreeNode(this._constantNode, table);
 			foreach(ITable table in info.AttributePool)
-				this.GetAddTreeNode(this._attributesNode, table);
+				this.AddTreeNode(this._attributesNode, table);
 
 			if(!isDirty)
 			{
@@ -51,7 +51,7 @@ namespace Plugin.ByteCodeView.Directory
 				this.tvHierarchy_AfterSelect(null, new TreeViewEventArgs(tvHierarchy.SelectedNode));
 		}
 
-		private TreeNode GetAddTreeNode(TreeNode root, ITable table)
+		private void AddTreeNode(TreeNode root, ITable table)
 		{
 			TreeNode node = this.FindTreeNode(root, table.Type);
 			if(node == null)
@@ -63,8 +63,6 @@ namespace Plugin.ByteCodeView.Directory
 			node.Text = $"{table.Type} ({table.RowsCount:n0})";
 			if(table.RowsCount == 0)
 				node.SetNull();
-
-			return node;
 		}
 
 		private void ContextMenuStrip_Opening(Object sender, CancelEventArgs e)
@@ -80,17 +78,18 @@ namespace Plugin.ByteCodeView.Directory
 					foreach(ColumnHeader column in lvHeaps.Columns)
 					{
 						Object cell = rowType.InvokeMember(column.Text, BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty, null, item.Tag, null);
-						IRowPointer rowPointer = cell as IRowPointer;
 						IEnumerable cellEnum = cell as IEnumerable;//TODO: Not implemented
 						if(cellEnum?.GetType().IsBclType() == true)
-							continue;//Отсекаю System.String
+							continue;//Cutting it off System.String
 
-						if(rowPointer != null)
+						if(cell is IRowPointer)
 						{
 							this._menuItemGoTo.DropDownItems.Add(new ToolStripMenuItem(item.SubItems[column.Index].Text) { Tag = column.Index, });
 							showGoTo = true;
 						} else if(cellEnum != null)
+						{
 							throw new NotImplementedException();
+						}
 					}
 				}
 			}
@@ -119,8 +118,7 @@ namespace Plugin.ByteCodeView.Directory
 					foreach(ListViewItem subNode in lvHeaps.Items)
 					{
 						IRow subRow = subNode.Tag as IRow;
-						IBaseRow baseRow = subNode.Tag as IBaseRow;
-						if(baseRow != null)
+						if(subNode.Tag is IBaseRow baseRow)
 							subRow = baseRow.Row;
 						if(subRow != null && subRow.Index == rowPointer.Index)
 						{
@@ -174,7 +172,7 @@ namespace Plugin.ByteCodeView.Directory
 					else
 						lvHeaps.DataBind(((IEnumerable)table));
 
-					//Сокрытие ссылок на другие таблицы
+					//Hiding references to other tables
 					splitDetails.Panel2Collapsed = true;
 					foreach(TabPage tab in tabPointers.TabPages)
 					{
@@ -187,7 +185,7 @@ namespace Plugin.ByteCodeView.Directory
 					base.Cursor = Cursors.Default;
 				}
 			}
-			tabPointers.TabPages.Clear();//Удаление всех ранее созданных табов
+			tabPointers.TabPages.Clear();//Deleting all previously created tabs
 		}
 
 		private void lvHeaps_SelectedIndexChanged(Object sender, EventArgs e)
@@ -217,7 +215,7 @@ namespace Plugin.ByteCodeView.Directory
 						IEnumerable cellEnum = cell as IEnumerable;
 						Byte[] cellByteArray = cell as Byte[];
 						if(cellEnum?.GetType().IsBclType() == true)
-							continue;//Отсекаю System.String TODO: Не реботает с Byte[] (cellByteArray)
+							continue;//Cutting off System.String TODO: Doesn't work with Byte[] (cellByteArray)
 
 						if(rowPointer != null || cellEnum != null || cellRow != null || cellByteArray != null)
 						{
@@ -225,7 +223,7 @@ namespace Plugin.ByteCodeView.Directory
 							Control ctlCellPointer = this.GetOrCreateTabControl(column.Text, rowPointer != null || cellRow != null, cellEnum != null, cellByteArray != null);
 
 							if(rowPointer != null)
-							{//TODO: CellPointer не реализован
+							{//TODO: CellPointer not implemented
 								ITables tables = rowPointer.Root;
 								Object baseMetaTable = DocumentTables.GetTableBase(tables, rowPointer.TableType.ToString());
 								if(baseMetaTable != null)

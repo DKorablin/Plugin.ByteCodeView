@@ -17,7 +17,7 @@ namespace Plugin.ByteCodeView.Directory
 		protected PluginWindows Plugin => (PluginWindows)this.Window.Plugin;
 		protected IWindow Window => (IWindow)base.Parent;
 
-		/// <summary>Путь к открытому файлу в текущем документе</summary>
+		/// <summary>Path to the open file in the current document</summary>
 		internal String FilePath => this.Settings.FilePath;
 
 		Object IPluginSettings.Settings => this.Settings;
@@ -27,7 +27,7 @@ namespace Plugin.ByteCodeView.Directory
 		protected virtual void SetCaption()
 			=> this.Window.Caption = String.Join(" - ", new String[] { Path.GetFileName(this.Settings.FilePath), Constant.GetHeaderName(this._peType), });
 
-		public DocumentBase(ClassItemType type)
+		protected DocumentBase(ClassItemType type)
 		{
 			this._peType = type;
 			this.InitializeComponent();
@@ -35,10 +35,10 @@ namespace Plugin.ByteCodeView.Directory
 
 		protected override void OnCreateControl()
 		{
-			this.Window.Shown += Window_Shown;
-			this.Window.Closed += Window_Closed;
-			this.Plugin.SettingsChanged += Plugin_SettingsChanged;
-			this.Plugin.Binaries.PeListChanged += Plugin_PeListChanged;
+			this.Window.Shown += this.Window_Shown;
+			this.Window.Closed += this.Window_Closed;
+			this.Plugin.SettingsChanged += this.Plugin_SettingsChanged;
+			this.Plugin.Binaries.PeListChanged += this.Plugin_PeListChanged;
 			base.OnCreateControl();
 			this.DataBind();
 		}
@@ -48,15 +48,15 @@ namespace Plugin.ByteCodeView.Directory
 			var info = this.GetFile();
 			if(info == null)
 			{
-				this.Plugin.Trace.TraceInformation("File {0} not found", this.FilePath);
+				this.Plugin.Trace.TraceInformation("File '{0}' not found", this.FilePath);
 				this.Window.Close();
 			}
 		}
 
 		private void Window_Closed(Object sender, EventArgs e)
 		{
-			this.Plugin.SettingsChanged -= Plugin_SettingsChanged;
-			this.Plugin.Binaries.PeListChanged -= Plugin_PeListChanged;
+			this.Plugin.SettingsChanged -= this.Plugin_SettingsChanged;
+			this.Plugin.Binaries.PeListChanged -= this.Plugin_PeListChanged;
 		}
 
 		private void Plugin_PeListChanged(Object sender, PeListChangedEventArgs e)
@@ -88,9 +88,9 @@ namespace Plugin.ByteCodeView.Directory
 			}
 		}
 
-		/// <summary>Получить путь к файлу</summary>
-		/// <param name="fileName">Наименование файла к кторому необходимо получить путь</param>
-		/// <returns>Физический путь к файлу или null</returns>
+		/// <summary>Get the path to the file</summary>
+		/// <param name="fileName">Name of the file to which you want to get the path</param>
+		/// <returns>Physical path to the file or null</returns>
 		protected String GetFilePath(String fileName)
 		{
 			String directoryName = Path.GetDirectoryName(this.FilePath);
@@ -110,8 +110,8 @@ namespace Plugin.ByteCodeView.Directory
 			return path;
 		}
 
-		/// <summary>Открыть файл, если его открывает окно, скажем, через Drag'n'Drop</summary>
-		/// <param name="filePath">Путь к файлу для открытия</param>
+		/// <summary>Open a file if a window opens it, say, via Drag'n'Drop</summary>
+		/// <param name="filePath">Path to the file to open</param>
 		protected void OpenFile(String filePath)
 		{
 			if(this.FilePath == null || !this.FilePath.Equals(filePath, StringComparison.OrdinalIgnoreCase))
@@ -130,20 +130,20 @@ namespace Plugin.ByteCodeView.Directory
 			var info = this.GetFile();
 			if(info != null)
 			{
-				this.Plugin.Binaries.OpenFile(this.FilePath);//Файл открыт. Необходимо обновить список открытых файлов (При необходимости)
+				this.Plugin.Binaries.OpenFile(this.FilePath);//The file is open. The list of open files needs to be refreshed (if necessary).
 
 				this.SetCaption();
 				this.ShowFile(info);
 			}
 		}
 
-		/// <summary>Получить информацию о открытом файле</summary>
-		/// <returns>Корневая директория описателя PE файла</returns>
+		/// <summary>Get information about an open file</summary>
+		/// <returns>The root directory of the PE file handle</returns>
 		protected ClassFile GetFile()
-			=> this.Plugin.Binaries.LoadFile(this.FilePath, false);
+		=> this.Plugin.Binaries.LoadFile(this.FilePath, false);
 
-		/// <summary>Отобразить файл в окне</summary>
-		/// <param name="info">Информация о файле</param>
+		/// <summary>Display a file in a window</summary>
+		/// <param name="info">File information</param>
 		protected abstract void ShowFile(ClassFile info);
 	}
 }

@@ -16,34 +16,32 @@ namespace Plugin.ByteCodeView
 {
 	public class PluginWindows : IPlugin, IPluginSettings<PluginSettings>
 	{
-		#region Fields
 		private TraceSource _trace;
 		private PluginSettings _settings;
 		private readonly Object _binLock = new Object();
 		private FileStorage _binaries;
 		private Dictionary<ClassItemType, Type> _directoryViewers;
 		private Dictionary<String, DockState> _documentTypes;
-		#endregion Fields
 
-		#region Properties
 		internal TraceSource Trace => this._trace ?? (this._trace = PluginWindows.CreateTraceSource<PluginWindows>());
 
 		private IMenuItem MenuPeInfo { get; set; }
+
 		private IMenuItem MenuWinApi { get; set; }
 
-		/// <summary>Настройки для взаимодействия из хоста</summary>
+		/// <summary>Settings for interaction from the host</summary>
 		Object IPluginSettings.Settings => this.Settings;
 
-		/// <summary>Настройки для взаимодействия из плагина</summary>
+		/// <summary>Settings for interaction from the plugin</summary>
 		public PluginSettings Settings
 		{
 			get
 			{
 				if(this._settings == null)
 				{
-					this._settings = new PluginSettings(this);
+					this._settings = new PluginSettings();
 					this.HostWindows.Plugins.Settings(this).LoadAssemblyParameters(this._settings);
-					this._settings.PropertyChanged += Settings_PropertyChanged;
+					this._settings.PropertyChanged += this.Settings_PropertyChanged;
 				}
 				return this._settings;
 			}
@@ -51,7 +49,7 @@ namespace Plugin.ByteCodeView
 
 		internal IHostWindows HostWindows { get; }
 
-		/// <summary>Хранилище открытых файлов</summary>
+		/// <summary>Open File Storage</summary>
 		internal FileStorage Binaries
 		{
 			get
@@ -65,7 +63,7 @@ namespace Plugin.ByteCodeView
 		}
 
 		internal Dictionary<ClassItemType, Type> DirectoryViewers
-		{//TODO: Маппинг типа енума на UI документа
+		{//TODO: Mapping enum type on document UI
 			get
 			{
 				if(this._directoryViewers == null)
@@ -83,7 +81,7 @@ namespace Plugin.ByteCodeView
 		private Dictionary<String, DockState> DocumentTypes
 		{
 			get
-			{//TODO: Список поддерживаемых окон
+			{//TODO: List of supported windows
 				if(this._documentTypes == null)
 					this._documentTypes = new Dictionary<String, DockState>()
 					{
@@ -93,9 +91,8 @@ namespace Plugin.ByteCodeView
 				return this._documentTypes;
 			}
 		}
-		#endregion Properties
 
-		/// <summary>Вызывается при изменении настроек плагина, которые влияют на внешний вид отображения</summary>
+		/// <summary>Called when plugin settings that affect the display appearance change</summary>
 		internal event PropertyChangedEventHandler SettingsChanged;
 
 		public PluginWindows(IHostWindows hostWindows)
@@ -125,7 +122,7 @@ namespace Plugin.ByteCodeView
 		public String[] GetSearchObjects(String folderPath)
 		{
 			List<String> result = new List<String>();
-			foreach(String file in System.IO.Directory.GetFiles(folderPath, "*.*", System.IO.SearchOption.AllDirectories))//TODO: При переходе на .NET 4 переделать на Directory.EnumerateFiles
+			foreach(String file in System.IO.Directory.GetFiles(folderPath, "*.*", System.IO.SearchOption.AllDirectories))//TODO: When migrating to .NET 4, change to Directory.EnumerateFiles
 				if(System.IO.Path.GetExtension(file).Equals(".class", StringComparison.OrdinalIgnoreCase))
 					result.Add(file);
 			return result.ToArray();
@@ -163,11 +160,9 @@ namespace Plugin.ByteCodeView
 			if(this.MenuWinApi != null && this.MenuWinApi.Items.Count == 0)
 				this.HostWindows.MainMenu.Items.Remove(this.MenuWinApi);
 
-			if(NodeExtender._nullFont != null)
-				NodeExtender._nullFont.Dispose();
+			NodeExtender.DisposeFonts();
 
-			if(this._binaries != null)
-				this._binaries.Dispose();
+			this._binaries?.Dispose();
 			return true;
 		}
 
@@ -199,7 +194,7 @@ namespace Plugin.ByteCodeView
 				case '\v':	return "\\v";
 				default:	return value.ToString();
 				}
-			} else if(value is IFormattable)
+			} else if(value is IFormattable fValue)
 			{
 				type = type.GetRealType();//INullable<Enum>
 				if(type.IsEnum)
@@ -218,10 +213,9 @@ namespace Plugin.ByteCodeView
 				case TypeCode.Single:
 				case TypeCode.Double:
 				case TypeCode.Decimal:
-					if(this.Settings.ShowAsHexValue)
-						return "0x" + ((IFormattable)value).ToString("X", CultureInfo.CurrentCulture);
-					else
-						return ((IFormattable)value).ToString("n0", CultureInfo.CurrentCulture);
+					return this.Settings.ShowAsHexValue
+						? "0x" + fValue.ToString("X", CultureInfo.CurrentCulture)
+						: fValue.ToString("n0", CultureInfo.CurrentCulture);
 				default:
 					return value.ToString();
 				}
@@ -260,9 +254,9 @@ namespace Plugin.ByteCodeView
 			return this.GetSectionData(type, nodeName, info);
 		}
 
-		/// <summary>Получить объект, соответсвующий определённому идентификатору енума</summary>
-		/// <param name="type">Тип заголовка</param>
-		/// <param name="filePath">Путь к PE файлу</param>
+		/// <summary>Get an object corresponding to a specific enum identifier</summary>
+		/// <param name="type">Header type</param>
+		/// <param name="filePath">Path to the PE file</param>
 		/// <returns></returns>
 		internal Object GetSectionData(ClassItemType type, String nodeName, ClassFile info)
 		{
@@ -283,7 +277,7 @@ namespace Plugin.ByteCodeView
 					if(field.ToString() == nodeName)
 						return field.Attributes;
 				throw new ArgumentException($"Field '{nodeName}' not found");
-			case ClassItemType.Intrefaces:
+			case ClassItemType.Interfaces:
 				return info.Interfaces;
 			case ClassItemType.Methods:
 				return info.Methods;

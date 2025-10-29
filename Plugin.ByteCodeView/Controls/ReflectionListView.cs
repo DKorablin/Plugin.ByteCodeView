@@ -82,12 +82,12 @@ namespace Plugin.ByteCodeView.Controls
 				} else
 					this.DataBindI(row, null);
 
-				//Такой код использовать нельзя. Т.к. изредка класс инкапсулирует дочерний массив
-				/*IEnumerable ienum = row as IEnumerable;
-				if(ienum != null)
+				//This code cannot be used, because a class rarely encapsulates a child array.
+				/*IEnumerable iEnum = row as IEnumerable;
+				if(iEnum != null)
 				{
 					Int32 index = 0;
-					foreach(Object item in ienum)
+					foreach(Object item in iEnum)
 						this.DataBindI(item, this.Plugin.FormatValue(index++));
 				} else
 					this.DataBindI(row, null);*/
@@ -143,14 +143,6 @@ namespace Plugin.ByteCodeView.Controls
 			return this.CreateListItem(row, info.Name, value, groupName, isException);
 		}
 
-		private ListViewGroup GetGroup(String groupName)
-		{
-			ListViewGroup result = base.Groups[groupName];
-			if(result == null)
-				result = base.Groups.Add(groupName, groupName);
-			return result;
-		}
-
 		public ListViewItem CreateListItem(Object row, MemberInfo member)
 		{
 			return this.CreateListItem(row,
@@ -164,7 +156,7 @@ namespace Plugin.ByteCodeView.Controls
 		{
 			ListViewItem result = new ListViewItem() { Tag = row, };
 			if(!String.IsNullOrEmpty(groupName))
-				result.Group = this.GetGroup(groupName);
+				result.Group = base.Groups[groupName] ?? base.Groups.Add(groupName, groupName);
 
 			if(base.Columns.Count == 0)
 				base.Columns.AddRange(new ColumnHeader[]
