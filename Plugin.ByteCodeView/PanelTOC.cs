@@ -153,7 +153,7 @@ namespace Plugin.ByteCodeView
 				if(this.Plugin.GetSectionData(type, nodeName, filePath) is ISectionData)
 					this.OpenBinaryDocument(type, nodeName, filePath);
 				else
-					this.Plugin.Trace.TraceInformation("Viewer {0} not implemented", type);
+					this.Plugin.Trace.TraceEvent(System.Diagnostics.TraceEventType.Information, 0, "Viewer {0} not implemented", type);
 			}
 		}
 

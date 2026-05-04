@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 [assembly: System.CLSCompliant(false)]
 
 [assembly: AssemblyDescription("Java ByteCode (JVM) viewer plugin")]
-[assembly: AssemblyCopyright("Copyright © Danila Korablin 2016-2025")]
 
 /*
 if $(ConfigurationName) == Release (

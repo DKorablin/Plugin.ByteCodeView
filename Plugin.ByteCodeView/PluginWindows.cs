@@ -16,14 +16,13 @@ namespace Plugin.ByteCodeView
 {
 	public class PluginWindows : IPlugin, IPluginSettings<PluginSettings>
 	{
-		private TraceSource _trace;
 		private PluginSettings _settings;
 		private readonly Object _binLock = new Object();
 		private FileStorage _binaries;
 		private Dictionary<ClassItemType, Type> _directoryViewers;
 		private Dictionary<String, DockState> _documentTypes;
 
-		internal TraceSource Trace => this._trace ?? (this._trace = PluginWindows.CreateTraceSource<PluginWindows>());
+		internal ITraceSource Trace { get; }
 
 		private IMenuItem MenuPeInfo { get; set; }
 
@@ -95,8 +94,11 @@ namespace Plugin.ByteCodeView
 		/// <summary>Called when plugin settings that affect the display appearance change</summary>
 		internal event PropertyChangedEventHandler SettingsChanged;
 
-		public PluginWindows(IHostWindows hostWindows)
-			=> this.HostWindows = hostWindows ?? throw new ArgumentNullException(nameof(hostWindows));
+		public PluginWindows(IHostWindows hostWindows, ITraceSource trace)
+		{
+			this.HostWindows = hostWindows ?? throw new ArgumentNullException(nameof(hostWindows));
+			this.Trace = trace ?? throw new ArgumentNullException(nameof(trace));
+		}
 
 		public IWindow GetPluginControl(String typeName, Object args)
 			=> this.CreateWindow(typeName, false, args);
@@ -303,14 +305,5 @@ namespace Plugin.ByteCodeView
 			=> this.DirectoryViewers.TryGetValue(typeName, out Type type)
 				? this.HostWindows.Windows.CreateWindow(this, type.ToString(), true, DockState.Document, args)
 				: null;
-
-		private static TraceSource CreateTraceSource<T>(String name = null) where T : IPlugin
-		{
-			TraceSource result = new TraceSource(typeof(T).Assembly.GetName().Name + name);
-			result.Switch.Level = SourceLevels.All;
-			result.Listeners.Remove("Default");
-			result.Listeners.AddRange(System.Diagnostics.Trace.Listeners);
-			return result;
-		}
 	}
 }

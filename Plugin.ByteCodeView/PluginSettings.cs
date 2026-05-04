@@ -22,7 +22,7 @@ namespace Plugin.ByteCodeView
 			{
 				Boolean isChanged = this._showAsHexValue != null && this._showAsHexValue != value;
 				if(isChanged)
-					this.SetField(ref this._showAsHexValue, value, nameof(ShowAsHexValue));
+					this.SetField(ref this._showAsHexValue, value, nameof(this.ShowAsHexValue));
 			}
 		}
 
@@ -32,11 +32,11 @@ namespace Plugin.ByteCodeView
 		public Boolean ShowBaseMetaTables
 		{
 			get => this._showBaseMetaTables.GetValueOrDefault();
-			set => this.SetField(ref this._showBaseMetaTables, value, nameof(ShowBaseMetaTables));
+			set => this.SetField(ref this._showBaseMetaTables, value, nameof(this.ShowBaseMetaTables));
 		}
 
 		[Category("Appearance")]
-		[DefaultValue(typeof(UInt32),"10")]
+		[DefaultValue(typeof(UInt32), "10")]
 		[Description("Maximum items in array to display")]
 		public UInt32 MaxArrayDisplay
 		{
@@ -45,7 +45,7 @@ namespace Plugin.ByteCodeView
 			{
 				Boolean isChanged = this._maxArrayDisplay != value;
 				if(isChanged)
-					this.SetField(ref this._maxArrayDisplay, value, nameof(MaxArrayDisplay));
+					this.SetField(ref this._maxArrayDisplay, value, nameof(this.MaxArrayDisplay));
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace Plugin.ByteCodeView
 			{
 				Boolean isChanged = this._monitorFileChange != null && this._monitorFileChange != value;
 				if(isChanged)
-					this.SetField(ref this._monitorFileChange, value, nameof(MonitorFileChange));
+					this.SetField(ref this._monitorFileChange, value, nameof(this.MonitorFileChange));
 			}
 		}
 
@@ -70,15 +70,15 @@ namespace Plugin.ByteCodeView
 		public String LoadedFilesI
 		{
 			get => this._loadedFilesI;
-			set => this.SetField(ref this._loadedFilesI, value, nameof(LoadedFilesI));
+			set => this.SetField(ref this._loadedFilesI, value, nameof(this.LoadedFilesI));
 		}
 
 		/// <remarks>.NET 2.0 XML Serializer fix</remarks>
 		internal String[] LoadedFiles
 		{
 			get => this.LoadedFilesI == null
-					? new String[] { }
-					: this.LoadedFilesI.Split(new Char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+				? new String[] { }
+				: this.LoadedFilesI.Split(new Char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
 			set => this.LoadedFilesI = value == null ? null : String.Join("|", value);
 		}
 
