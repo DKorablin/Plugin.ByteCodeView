@@ -15,7 +15,7 @@ namespace Plugin.ByteCodeView.Directory
 		private readonly ClassItemType _peType;
 		private DocumentBaseSettings _settings;
 
-		protected PluginWindows Plugin => (PluginWindows)this.Window.Plugin;
+		protected PluginWindows Plugin => (PluginWindows)this.Window.Plugin.Instance;
 
 		protected IWindow Window => (IWindow)base.Parent;
 
